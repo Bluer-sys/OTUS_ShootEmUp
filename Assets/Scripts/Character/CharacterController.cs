@@ -6,43 +6,60 @@ namespace ShootEmUp
     {
         [SerializeField] private GameObject character; 
         [SerializeField] private GameManager gameManager;
-        [SerializeField] private BulletSystem _bulletSystem;
-        [SerializeField] private BulletConfig _bulletConfig;
-        
-        public bool _fireRequired;
+        [SerializeField] private BulletSystem bulletSystem;
+        [SerializeField] private BulletConfig bulletConfig;
 
+        private HitPointsComponent hitPointsComponent;
+        
+        private bool fireRequired;
+
+
+        private void Awake()
+        {
+            hitPointsComponent = character.GetComponent<HitPointsComponent>();
+        }
+        
         private void OnEnable()
         {
-            this.character.GetComponent<HitPointsComponent>().hpEmpty += this.OnCharacterDeath;
+            hitPointsComponent.OnDead += OnCharacterDeath;
         }
 
         private void OnDisable()
         {
-            this.character.GetComponent<HitPointsComponent>().hpEmpty -= this.OnCharacterDeath;
+            hitPointsComponent.OnDead -= OnCharacterDeath;
         }
 
-        private void OnCharacterDeath(GameObject _) => this.gameManager.FinishGame();
 
         private void FixedUpdate()
         {
-            if (this._fireRequired)
-            {
-                this.OnFlyBullet();
-                this._fireRequired = false;
-            }
+            if (!fireRequired)
+                return;
+
+            OnFlyBullet();
+            fireRequired = false;
         }
+
+
+        public void SetFireActive(bool state)
+        {
+            fireRequired = state;
+        }
+
+
+        private void OnCharacterDeath(GameObject _) => gameManager.FinishGame();
+
 
         private void OnFlyBullet()
         {
-            var weapon = this.character.GetComponent<WeaponComponent>();
-            _bulletSystem.FlyBulletByArgs(new BulletSystem.Args
+            var weapon = character.GetComponent<WeaponComponent>();
+            bulletSystem.FlyBulletByArgs(new BulletData
             {
-                isPlayer = true,
-                physicsLayer = (int) this._bulletConfig.physicsLayer,
-                color = this._bulletConfig.color,
-                damage = this._bulletConfig.damage,
-                position = weapon.Position,
-                velocity = weapon.Rotation * Vector3.up * this._bulletConfig.speed
+                IsPlayerOwner = true,
+                PhysicsLayer = (int) bulletConfig.PhysicsLayer,
+                Color = bulletConfig.Color,
+                Damage = bulletConfig.Damage,
+                Position = weapon.Position,
+                Velocity = weapon.Rotation * Vector3.up * bulletConfig.Speed
             });
         }
     }

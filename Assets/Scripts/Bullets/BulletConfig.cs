@@ -2,22 +2,12 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    [CreateAssetMenu(
-        fileName = "BulletConfig",
-        menuName = "Bullets/New BulletConfig"
-    )]
+    [CreateAssetMenu(fileName = "BulletConfig", menuName = "Config/Bullet")]
     public sealed class BulletConfig : ScriptableObject
     {
-        [SerializeField]
-        public PhysicsLayer physicsLayer;
-
-        [SerializeField]
-        public Color color;
-
-        [SerializeField]
-        public int damage;
-
-        [SerializeField]
-        public float speed;
+        [SerializeField] public PhysicsLayer PhysicsLayer;
+        [SerializeField] public Color Color;
+        [SerializeField] public int Damage;
+        [SerializeField] public float Speed;
     }
 }
